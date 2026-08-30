@@ -1,0 +1,34 @@
+{
+  "_readme": [
+    "이 파일을 ui_steps.json 으로 복사한 뒤, Appium Inspector로 삼성증권 POP 앱을 열어",
+    "실제 요소의 resource-id / text / xpath 값을 채워 넣으세요.",
+    "각 step의 action 종류:",
+    "  wait            : {\"action\": \"wait\", \"seconds\": 1.5}",
+    "  tap_id          : {\"action\": \"tap_id\", \"value\": \"com.samsung.sec.pop:id/btn_1\"}",
+    "  tap_xpath       : {\"action\": \"tap_xpath\", \"value\": \"//android.widget.Button[@text='1']\"}",
+    "  tap_text        : {\"action\": \"tap_text\", \"value\": \"신용현황\"}",
+    "  type_pin_digits : PIN 자리수만큼 숫자 버튼을 자동으로 눌러줌 (login_steps 안에서만 사용)",
+    "     {\"action\": \"type_pin_digits\", \"digit_id_template\": \"com.samsung.sec.pop:id/btn_{d}\"}"
+  ],
+  "app_package": "TODO.실제.패키지명",
+  "app_activity": "TODO.실제.시작액티비티",
+  "login_check": {
+    "_comment": "로그인 화면인지 판단할 요소. 이 요소가 보이면 login_steps를 실행함.",
+    "by": "id",
+    "value": "TODO.간편비밀번호_입력_화면의_고유_요소_id"
+  },
+  "login_steps": [
+    { "action": "wait", "seconds": 1.0 },
+    {
+      "action": "type_pin_digits",
+      "digit_id_template": "TODO.숫자버튼_id_템플릿_예:com.samsung.sec.pop:id/btn_{d}"
+    },
+    { "action": "wait", "seconds": 2.0 }
+  ],
+  "navigate_steps": [
+    { "action": "tap_text", "value": "메뉴" },
+    { "action": "wait", "seconds": 1.0 },
+    { "action": "tap_text", "value": "신용현황" },
+    { "action": "wait", "seconds": 1.5 }
+  ]
+}
