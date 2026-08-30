@@ -21,7 +21,7 @@ Tasker에서 "신용액 갱신"이라는 Task(작업)를 하나 만들고, 그 �
 | 순서 | 동작 | Tasker Action |
 |---|---|---|
 | 1 | 삼성증권 POP 앱 실행 | `App > Load App` |
-| 2 | 1~2초 대기 (앱 켜질 시간) | `Alert > Wait` |
+| 2 | 1~2초 대기 (앱 켜질 시간) | `Task > Wait` |
 | 3 | 로그인 화면인지 확인 | `Plugin > AutoInput > Query` (텍스트/id로 존재 확인) |
 | 4 | (로그인 화면이면) PIN 숫자 버튼 순서대로 탭 | `Plugin > AutoInput > Action` 반복, 또는 좌표 `Tap` |
 | 5 | 신용현황 메뉴로 이동 | `Plugin > AutoInput > Action` (텍스트로 탭: "신용현황" 등) |
@@ -41,7 +41,7 @@ Tasker에서 "신용액 갱신"이라는 Task(작업)를 하나 만들고, 그 �
 
 ### 2) 대기 (Action 2)
 
-`+` → `Alert` → `Wait` → 1.5초 정도.
+`+` → `Task` → `Wait` → 1.5초 정도.
 
 ### 3) 로그인 화면인지 확인 + PIN 입력 (Action 3~4)
 
