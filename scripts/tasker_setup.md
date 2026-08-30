@@ -22,11 +22,17 @@ Tasker에서 "신용액 갱신"이라는 Task(작업)를 하나 만들고, 그 �
 |---|---|---|
 | 1 | 삼성증권 POP 앱 실행 | `App > Load App` |
 | 2 | 1~2초 대기 (앱 켜질 시간) | `Task > Wait` |
-| 3 | 로그인 화면인지 확인 | `Plugin > AutoInput > Query` (텍스트/id로 존재 확인) |
-| 4 | (로그인 화면이면) PIN 숫자 버튼 순서대로 탭 | `Plugin > AutoInput > Action` 반복, 또는 좌표 `Tap` |
-| 5 | 신용현황 메뉴로 이동 | `Plugin > AutoInput > Action` (텍스트로 탭: "신용현황" 등) |
-| 6 | 신용액 텍스트 요소 읽기 | `Plugin > AutoInput > Query` → 결과를 변수 `%credit_amount` 에 저장 |
-| 7 | 결과 기록 | `File > Write File` (로컬 csv) 또는 `Net > HTTP Request` (구글시트 등으로 전송) |
+| 3 | "잔고" 메뉴 탭 | `Plugin > AutoInput > Action` (텍스트로 탭: "잔고") |
+| 4 | 대기 | `Task > Wait` (0.5~1초) |
+| 5 | 인증(PIN) 화면인지 확인 | `Plugin > AutoInput > Query` (텍스트/id로 존재 확인) — 잔고는 세션이 살아있어도 별도 인증을 다시 요구하는 경우가 있음 |
+| 6 | (인증 화면이면) PIN 숫자 버튼 순서대로 탭 | `Plugin > AutoInput > Action` 반복, 또는 좌표 `Tap` |
+| 7 | 신용현황 메뉴로 이동 | `Plugin > AutoInput > Action` (텍스트로 탭: "신용현황" 등) |
+| 8 | 신용액 텍스트 요소 읽기 | `Plugin > AutoInput > Query` → 결과를 변수 `%credit_amount` 에 저장 |
+| 9 | 결과 기록 | `File > Write File` (로컬 csv) 또는 `Net > HTTP Request` (구글시트 등으로 전송) |
+
+> 잔고 탭 → 인증 요구는 삼성증권이 자산 조회 같은 민감한 화면에는
+> 세션이 살아있어도 재인증을 걸어두는 경우가 많아서입니다. 그래서
+> 인증 체크(5번)를 앱 실행 직후가 아니라 "잔고" 탭 다음으로 옮겼습니다.
 
 이 Task를 다 만든 뒤, 아래 중 하나로 "트리거"를 답니다.
 
@@ -43,9 +49,14 @@ Tasker에서 "신용액 갱신"이라는 Task(작업)를 하나 만들고, 그 �
 
 `+` → `Task` → `Wait` → 1.5초 정도.
 
-### 3) 로그인 화면인지 확인 + PIN 입력 (Action 3~4)
+### 3) "잔고" 탭 (Action 3~4)
 
-AutoInput의 `Query` action으로 로그인 화면에만 있는 요소(예: 간편비밀번호
+`+` → `Plugin` → `AutoInput` → `Action` → Match Text: `잔고` → Click.
+그다음 `Task > Wait` 0.5~1초 추가.
+
+### 4) 인증(PIN) 화면인지 확인 + PIN 입력 (Action 5~6)
+
+AutoInput의 `Query` action으로 인증 화면에만 있는 요소(예: 간편비밀번호
 입력 안내 문구)가 화면에 있는지 확인합니다. 방법:
 
 1. `+` → `Plugin` → `AutoInput` → `Query`
@@ -64,7 +75,7 @@ AutoInput의 `Query` action으로 로그인 화면에만 있는 요소(예: 간�
 > 노출하지 않도록 합니다. (완전한 암호화는 아니지만, 캡처/스크린샷에
 > 값이 노출되지 않게는 해줍니다.)
 
-### 4) 신용현황 메뉴 이동 (Action 5)
+### 5) 신용현황 메뉴 이동 (Action 7)
 
 `Plugin > AutoInput > Action` → Match Text: `신용현황` (실제 메뉴
 문구에 맞게 수정) → Click.
@@ -72,7 +83,7 @@ AutoInput의 `Query` action으로 로그인 화면에만 있는 요소(예: 간�
 단계별로 여러 개 이어 붙이면 됩니다. 중간중간 `Wait` 0.5~1초씩 넣어야
 화면 전환 중 탭이 씹히지 않습니다.
 
-### 5) 신용액 값 읽기 (Action 6)
+### 6) 신용액 값 읽기 (Action 8)
 
 같은 방식으로 Query를 한 번 더 실행해서, 신용액 화면의 요소 목록을
 가져온 뒤 "신용" 문구 근처의 숫자 텍스트 요소를 찾습니다. AutoInput은
@@ -80,7 +91,7 @@ AutoInput의 `Query` action으로 로그인 화면에만 있는 요소(예: 간�
 값을 `%credit_amount` 변수에 옮겨 담습니다 (`Variable > Variable Set`
 또는 Query의 결과 변수를 그대로 사용).
 
-### 6) 기록 (Action 7)
+### 7) 기록 (Action 9)
 
 가장 간단한 방법은 로컬 파일에 이어쓰기:
 
