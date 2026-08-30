@@ -19,23 +19,25 @@ Tasker에서 "신용액 갱신"이라는 Task(작업)를 하나 만들고, 그 �
 `+` 버튼으로 추가합니다.
 
 앱을 실행하면 자동으로 잔고 화면으로 가면서 곧바로 비밀번호 인증
-화면이 뜨므로, "잔고" 탭이나 패턴 취소 단계는 필요 없습니다. 비밀번호만
-입력하면 됩니다.
+화면이 뜨므로, "잔고" 탭이나 패턴 취소 단계는 필요 없습니다. 이 인증
+화면은 보안키패드(글자별 버튼을 탭하는 방식)라서, 비밀번호는 `Set Text`
+가 아니라 **글자마다 Click 액션을 하나씩** 만들어 순서대로 눌러야
+합니다. 자세한 내용은 아래 "3) 비밀번호 입력" 참고.
 
 | 순서 | 동작 | Tasker Action |
 |---|---|---|
 | 1 | 삼성증권 POP 앱 실행 | `App > Load App` |
 | 2 | 1~2초 대기 (인증 화면 뜰 시간) | `Task > Wait` |
-| 3 | 비밀번호 입력칸에 값 채우기 | `Plugin > AutoInput > Action`, Type: `Set Text`, Text to Set: `%credit_password` |
+| 3 | 비밀번호 글자 수만큼 버튼 Click (글자마다 반복) | `Plugin > AutoInput > Action`, Text: 해당 글자, Type: `Click` |
 | 4 | "확인/로그인" 탭 | `Plugin > AutoInput > Action`, Text: `확인` (실제 버튼 문구로 수정), Type: `Click` |
 | 5 | 대기 | `Task > Wait` (0.5~1초) |
 | 6 | 신용현황 메뉴로 이동 | `Plugin > AutoInput > Action` (텍스트로 탭: "신용현황" 등) |
 | 7 | 신용액 텍스트 요소 읽기 | `Plugin > AutoInput > Query` → 결과를 변수 `%credit_amount` 에 저장 |
 | 8 | 결과 기록 | `File > Write File` (로컬 csv) 또는 `Net > HTTP Request` (구글시트 등으로 전송) |
 
-> `%credit_password` 변수는 Task 안에서 직접 값을 쓰지 말고, Tasker의
-> "Variable Set" 액션을 맨 앞에 하나 추가해서 거기에만 값을 넣어두는
-> 걸 권장합니다 (Task 목록 화면에서 값이 바로 안 보이게).
+> 글자별 Click 방식은 비밀번호 순서가 Task 설정 화면에 그대로 노출되는
+> 구조라, `Set Text` 방식만큼 값을 숨기기는 어렵습니다. 폰 화면 잠금을
+> 걸어두고, 이 Task를 다른 사람이 볼 수 없게 관리하세요.
 
 이 Task를 다 만든 뒤, 아래 중 하나로 "트리거"를 답니다.
 
@@ -52,22 +54,32 @@ Tasker에서 "신용액 갱신"이라는 Task(작업)를 하나 만들고, 그 �
 
 `+` → `Task` → `Wait` → 1.5초 정도.
 
-### 3) 비밀번호 입력 (Action 3~4)
+### 3) 비밀번호 입력 (Action 3~)
 
-앱을 켜면 곧바로 비밀번호 인증 화면이 뜨므로, 그 화면에서 바로
-아래 두 Action을 추가합니다.
+앱을 켜면 곧바로 비밀번호 인증 화면이 뜹니다. 이 화면은 일반 텍스트
+입력칸이 아니라 **보안키패드**(글자별 버튼을 화면에 그려서 탭하게 하는
+방식, 매번 배열이 랜덤일 수 있음)이므로, `Set Text`가 아니라 **비밀번호
+글자 수만큼 Click 액션을 순서대로** 만들어야 합니다. 배열이 랜덤이어도
+"지금 화면에 보이는 그 글자" 버튼을 찾아 누르는 방식이라 정상 동작할
+가능성이 높습니다.
 
-1. 맨 앞(Action 1보다 앞)에 `Variable > Variable Set` 액션을 하나
-   추가해서 `%credit_password` 변수에 비밀번호 값을 넣어둡니다.
-   (Task 중간이 아니라 맨 앞이나, 별도 "설정용 Task"에 분리해두면
-   더 안전합니다.)
-2. `Plugin > AutoInput > Action` — Type을 `Set Text`로 변경하면
-   **"Text to Set"** 칸이 새로 나타납니다. 거기에 `%credit_password`
-   입력. 어떤 입력칸인지 지정하려면 Description이나 View ID를 쓰거나,
-   화면에 입력칸이 하나뿐이면 비워둬도 잡힐 수 있습니다.
-3. `Plugin > AutoInput > Action` — Text: `확인` (실제 로그인 버튼
+예를 들어 비밀번호가 4글자(`1`,`a`,`2`,`b`)라면:
+
+1. `Plugin > AutoInput > Action` — Text: `1`, Type: `Click`
+2. `Task > Wait` 0.2~0.3초
+3. `Plugin > AutoInput > Action` — Text: `a`, Type: `Click`
+4. `Task > Wait` 0.2~0.3초
+5. `Plugin > AutoInput > Action` — Text: `2`, Type: `Click`
+6. `Task > Wait` 0.2~0.3초
+7. `Plugin > AutoInput > Action` — Text: `b`, Type: `Click`
+8. `Task > Wait` 0.2~0.3초
+9. `Plugin > AutoInput > Action` — Text: `확인` (실제 로그인 버튼
    문구로 수정), Type: `Click`
-4. `Task > Wait` 0.5~1초
+10. `Task > Wait` 0.5~1초
+
+실제 비밀번호 글자 수/문자에 맞춰 1~8번을 늘리거나 줄이면 됩니다.
+(참고: 대문자/소문자, 특수문자 키패드 전환이 필요한 비밀번호면 키패드
+전환 버튼을 누르는 Click 액션도 중간에 추가해야 할 수 있습니다.)
 
 ### 4) 신용현황 메뉴 이동 (Action 5)
 
